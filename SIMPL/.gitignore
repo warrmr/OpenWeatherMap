@@ -1,0 +1,43 @@
+# .gitignore file for Crestron projects
+#
+# Actual files that are relevant:
+#
+# *.umc		SIMPL module source files
+# *.usp		SIMPL+ module source files.
+# 		When temp files are deleted, these files should be
+#		opened and compiled before UMC or SMW files.
+# *.ir		IR source files for devices.
+# *.pdf		Documentation for the modules and should stay with
+# 		the .UMC files.
+# *.smw		Main project files.
+
+*~
+
+# VTpro ignored files
+*.ASV
+*.ced
+*.hash
+*.sgd
+
+# SIMPL ignored files
+*.ASV
+*.lpz
+*.sgd_
+*.sgd2
+*.sig
+*.smft
+*.sm2
+*.spz
+*.um2
+*.zip
+SPlsWork/
+
+# SIMPL+ ignored files
+#
+# Strictly speaking, *.ush files are generated files. However, these files
+# are routinely distributed as part of packages from vendors. Probably best
+# to just keep these as tracked files.
+#
+# Also, these need to be compiled prior to SIMPL files. By just tracking
+# these, the compile process is much easier.
+#*.ush
