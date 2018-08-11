@@ -241,31 +241,21 @@ SOCKETSTATUS
 
 PUSH requestWeather
 {	
-	IF(APIKey != "" || cityID != "")
-	{
-		if(units = "metric" || units = "imperial")
-		{
-			myWeather.getWeather(units);
-		}
-		else
-		{
-			myWeather.getWeather("");	
-		}
-		
-		Weather_Description = myWeather.weatherDescription;
-		Weather_Icon_URL = myWeather.weatherIconURL;
-		Temprature = myWeather.Temprature;
-		Pressure = myWeather.Pressure;
-		Humidity = myWeather.Humidity;
-		Wind_Speed = myWeather.windSpeed;
-		Wind_Direction = myWeather.windDirection;
-		Cloud_Cover = myWeather.cloudCover;
-		Rain_Volume_3h = myWeather.rainVolume3h;
-		Snow_Volume_3h = myWeather.snowVolume3h;
-		Time_Sunrise = myWeather.timeSunrise;
-		Time_Sunset = myWeather.timeSunset;
-		Time_Requested = myWeather.timeCalculated;
-	}
+	myWeather.getWeather(units);	
+	
+	Weather_Description = myWeather.weatherDescription;
+	Weather_Icon_URL = myWeather.weatherIconURL;
+	Temprature = myWeather.Temprature;
+	Pressure = myWeather.Pressure;
+	Humidity = myWeather.Humidity;
+	Wind_Speed = myWeather.windSpeed;
+	Wind_Direction = myWeather.windDirection;
+	Cloud_Cover = myWeather.cloudCover;
+	Rain_Volume_3h = myWeather.rainVolume3h;
+	Snow_Volume_3h = myWeather.snowVolume3h;
+	Time_Sunrise = myWeather.timeSunrise;
+	Time_Sunset = myWeather.timeSunset;
+	Time_Requested = myWeather.timeCalculated;
 }
 
 THREADSAFE CHANGE APIKey

@@ -56,58 +56,81 @@ namespace OpenWeatherMap
 
         private string getData(string url)
         {
-            HttpsClient client = new HttpsClient();            
+            HttpsClient client = new HttpsClient();
             return client.Get(url);
         }
-        
+
         private void parseJson(string json)
         {
-            CrestronConsole.PrintLine("parseJson(string json): Called");
             CrestronConsole.PrintLine("parseJson(string json) json: {0}", json);
-            RootObject myWeather = JsonConvert.DeserializeObject<RootObject>(json);
 
             try
             {
-                weatherDescription = myWeather.weather[0].description;
-                weatherIconURL = string.Format("http://openweathermap.org/img/w/{0}.png", myWeather.weather[0].icon);
-
-                Pressure = string.Format("{0} hPa", myWeather.main.pressure);
-                Humidity = string.Format("{0}%", myWeather.main.humidity);
-
-                windDirection = getWindDirection(myWeather.wind.deg);
-
-                timeSunrise = convertTime(myWeather.sys.sunrise);
-                timeSunset = convertTime(myWeather.sys.sunset);
-                timeCalculated = convertDateTime(myWeather.dt);
-
-                if(myWeather.clouds != null)
-                    cloudCover = string.Format("{0}%", myWeather.clouds.all);
-
-                if (myWeather.rain != null)
-                    rainVolume3h = string.Format("{0}mm", myWeather.rain.all);
-
-                if(myWeather.snow != null)
-                    snowVolume3h = string.Format("{0}mm", myWeather.snow.all);
-
-                switch (uts)
+                if (json.Contains("\"weather\":"))
                 {
-                    case 0:     // Kalvin
-                        Temprature = string.Format("{0}K", myWeather.main.temp);
-                        windSpeed = string.Format("{0} m/s", myWeather.wind.speed);
-                        break;
-                    case 1:     // Metric
-                        Temprature = string.Format("{0}C", myWeather.main.temp);
-                        windSpeed = string.Format("{0} m/s", myWeather.wind.speed);
-                        break;
-                    case 2:     // Imperial
-                        Temprature = string.Format("{0}F", myWeather.main.temp);
-                        windSpeed = string.Format("{0} mph", myWeather.wind.speed);
-                        break;
+                    parseWeatherJson(json);
+                }
+                else if (json.Contains("\"message\":") && json.Contains("\"cod\":"))
+                {
+                    CrestronConsole.PrintLine("OpenWeather Error: {0}", parseErrorJson(json));
+                }
+
+                else
+                {
+                    CrestronConsole.PrintLine("OpenWeather Invalid json: {0}", json);
                 }
             }
             catch (Exception ex)
             {
-                CrestronConsole.PrintLine("Exception Caught: {0}", ex);
+                CrestronConsole.PrintLine("OpenWeather Exception Caught: {0}", ex);
+            }
+        }
+
+        private string parseErrorJson(string json)
+        {
+            ApiIssue myIssue = JsonConvert.DeserializeObject<ApiIssue>(json);
+            return myIssue.message;
+        }
+
+        private void parseWeatherJson(string json)
+        {
+            RootObject myWeather = JsonConvert.DeserializeObject<RootObject>(json);
+
+            weatherDescription = myWeather.weather[0].description;
+            weatherIconURL = string.Format("http://openweathermap.org/img/w/{0}.png", myWeather.weather[0].icon);
+
+            Pressure = string.Format("{0} hPa", myWeather.main.pressure);
+            Humidity = string.Format("{0}%", myWeather.main.humidity);
+
+            windDirection = getWindDirection(myWeather.wind.deg);
+
+            timeSunrise = convertTime(myWeather.sys.sunrise);
+            timeSunset = convertTime(myWeather.sys.sunset);
+            timeCalculated = convertDateTime(myWeather.dt);
+
+            if (myWeather.clouds != null)
+                cloudCover = string.Format("{0}%", myWeather.clouds.all);
+
+            if (myWeather.rain != null)
+                rainVolume3h = string.Format("{0}mm", myWeather.rain.all);
+
+            if (myWeather.snow != null)
+                snowVolume3h = string.Format("{0}mm", myWeather.snow.all);
+
+            switch (uts)
+            {
+                case 0:     // Kalvin
+                    Temprature = string.Format("{0}K", myWeather.main.temp);
+                    windSpeed = string.Format("{0} m/s", myWeather.wind.speed);
+                    break;
+                case 1:     // Metric
+                    Temprature = string.Format("{0}C", myWeather.main.temp);
+                    windSpeed = string.Format("{0} m/s", myWeather.wind.speed);
+                    break;
+                case 2:     // Imperial
+                    Temprature = string.Format("{0}F", myWeather.main.temp);
+                    windSpeed = string.Format("{0} mph", myWeather.wind.speed);
+                    break;
             }
         }
 
@@ -130,13 +153,12 @@ namespace OpenWeatherMap
         {
             DateTime myTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             myTime = myTime.AddSeconds(timestamp);
-            return myTime.ToString("HH:mm dd/mm/yyyy");
+            return myTime.ToString("HH:mm:ss dd/mm/yyyy");
         }
     }
-    
-   public class Coord
-    {
 
+    public class Coord
+    {
         [JsonProperty("lon")]
         public double lon { get; set; }
 
@@ -146,7 +168,6 @@ namespace OpenWeatherMap
 
     public class Weather
     {
-
         [JsonProperty("id")]
         public int id { get; set; }
 
@@ -162,7 +183,6 @@ namespace OpenWeatherMap
 
     public class Main
     {
-
         [JsonProperty("temp")]
         public double temp { get; set; }
 
@@ -187,7 +207,6 @@ namespace OpenWeatherMap
 
     public class Wind
     {
-
         [JsonProperty("speed")]
         public double speed { get; set; }
 
@@ -209,14 +228,12 @@ namespace OpenWeatherMap
 
     public class Clouds
     {
-
         [JsonProperty("all")]
         public int all { get; set; }
     }
 
     public class Sys
     {
-
         [JsonProperty("message")]
         public double message { get; set; }
 
@@ -232,7 +249,6 @@ namespace OpenWeatherMap
 
     public class RootObject
     {
-
         [JsonProperty("coord")]
         public Coord coord { get; set; }
 
@@ -273,4 +289,9 @@ namespace OpenWeatherMap
         public int cod { get; set; }
     }
 
+    public class ApiIssue
+    {
+        public int cod { get; set; }
+        public string message { get; set; }
+    }
 }
