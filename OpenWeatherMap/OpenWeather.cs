@@ -68,8 +68,30 @@ namespace OpenWeatherMap
 
             try
             {
+<<<<<<< HEAD
                 weatherDescription = myWeather.weather[0].description;
                 weatherIconURL = string.Format("http://openweathermap.org/img/w/{0}.png", myWeather.weather[0].icon);
+=======
+                if (json.Contains("\"weather\":"))
+                {
+                    parseWeatherJson(json);
+                }
+                else if (json.Contains("\"message\":") && json.Contains("\"cod\":"))
+                {
+                    CrestronConsole.PrintLine("OpenWeather Error: {0}", parseErrorJson(json));
+                }
+
+                else
+                {
+                    CrestronConsole.PrintLine("OpenWeather Invalid json: {0}", json);
+                }
+            }
+            catch (Exception ex)
+            {
+                CrestronConsole.PrintLine("OpenWeather Exception Caught: {0}", ex);
+            }
+        }
+>>>>>>> a26321b... Error Handling
 
                 Pressure = string.Format("{0} hPa", myWeather.main.pressure);
                 Humidity = string.Format("{0}%", myWeather.main.humidity);
