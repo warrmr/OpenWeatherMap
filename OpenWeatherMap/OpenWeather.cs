@@ -74,6 +74,7 @@ namespace OpenWeatherMap
                 {
                     CrestronConsole.PrintLine("OpenWeather Error: {0}", parseErrorJson(json));
                 }
+
                 else
                 {
                     CrestronConsole.PrintLine("OpenWeather Invalid json: {0}", json);
